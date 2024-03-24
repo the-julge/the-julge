@@ -61,7 +61,6 @@ export default function useApplicationHistory() {
           status,
         };
       });
-      console.log(history);
       return { type, limit, count, items: history };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
