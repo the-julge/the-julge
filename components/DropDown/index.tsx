@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { ChangeEvent, useState } from "react";
 import Input from "../../pages/my-shop/components/Input";
 import DropDownList from "./components/DropDownList";
-
 interface DropDownProps {
   label?: string;
   categories: string[];
@@ -42,7 +41,7 @@ export default function DropDown({
     <DropDownContainer $width={width}>
       {!selectOption && <StyledSpan labelExists={!!label}>선택</StyledSpan>}
       <Input
-        label={label || "상세 필터"}
+        label={label}
         type="button"
         value={selectOption}
         includeImage
