@@ -3,6 +3,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { useQuery } from "react-query";
 import useCookie from "@/hooks/useCookies";
 import axios from "axios";
+import formatTimeRange from "@/lib/utils/formatTimeRange";
 
 type Application = {
   id: string;
@@ -51,7 +52,7 @@ export default function useApplicationHistory() {
         const { id, notice, shop, status } = item;
         const { name } = shop.item;
         const { hourlyPay, startsAt, workhour } = notice.item;
-        const date = `2023-01-12 10:00 ~ 12:00 (${workhour}시간)`;
+        const date = `${formatTimeRange(startsAt, workhour)} (${workhour}시간)`;
         return {
           id,
           name,
