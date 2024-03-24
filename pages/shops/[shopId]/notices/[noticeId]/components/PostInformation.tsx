@@ -6,6 +6,7 @@ import Image from "next/image";
 import clockIcon from "@/public/images/clock-icon 1.svg";
 import locationIcon from "@/public/images/location.svg";
 import { NoticeList } from "@/lib/types/NoticeTypes";
+import WageFlag from "@/components/Post/components/WageFlag";
 
 export default function PostInformation({
   noticeData,
@@ -13,14 +14,19 @@ export default function PostInformation({
   noticeData: NoticeList;
 }) {
   if (noticeData) {
-    const duration = formatTimeRange(
-      noticeData.item.startsAt,
-      noticeData.item.workhour,
-    );
-    const shopDescription = noticeData.item.shop.item.description;
-    const address = `${noticeData.item.shop.item.address1} ${noticeData.item.shop.item.address2}`;
-    const hourlyPay = noticeData.item.hourlyPay;
-    const originalHourlyPay = noticeData.item.shop.item.originalHourlyPay;
+    const noticeInfo = noticeData.item;
+    const shopInfo = noticeInfo.shop.item;
+
+    const { startsAt, workhour, hourlyPay } = noticeInfo;
+    const {
+      description: shopDescription,
+      address1,
+      address2,
+      originalHourlyPay,
+    } = shopInfo;
+
+    const duration = formatTimeRange(startsAt, workhour);
+    const address = `${address1} ${address2}`;
     const wageIncrease = getWageIncreaseText(hourlyPay, originalHourlyPay);
 
     return (
@@ -28,11 +34,10 @@ export default function PostInformation({
         <Wage>시급</Wage>
         <WageContainer>
           <HourlyPay>{Number(hourlyPay).toLocaleString()}원</HourlyPay>
-          {wageIncrease && (
-            <WageFlagStyle>
-              <span>시급 {wageIncrease}% ▲</span>
-            </WageFlagStyle>
-          )}
+          <WageFlag
+            hourlyPay={hourlyPay}
+            originalHourlyPay={originalHourlyPay}
+          />
         </WageContainer>
         <Container>
           <Image src={clockIcon} alt="clock_icon" />
@@ -67,27 +72,15 @@ const HourlyPay = styled.span`
   ${h1Regular}
 `;
 
-const WageFlagStyle = styled.div`
-  display: flex;
-  place-items: center;
-  padding: 2px 12px;
-
-  color: var(--The-julge-gray-00, #ffffff);
-  border-radius: 20px;
-  background: var(
-    --The-julge-purple-40,
-    #905cb9
-  ); // 값에 따라 색상 변경하도록 추가하기
-  ${body2Regular}
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   gap: 6px;
 `;
 
-const WageContainer = styled(Container)`
+const WageContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 `;
 

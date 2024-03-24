@@ -24,11 +24,10 @@ export default function WageFlag({
 }
 
 const WageFlagStyle = styled.div<{ wageIncrease: number }>`
-  position: absolute;
   border-radius: 4px;
-
+  position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
   padding: 6px 12px;
   color: var(--The-julge-gray-00);
   ${body2Bold}
