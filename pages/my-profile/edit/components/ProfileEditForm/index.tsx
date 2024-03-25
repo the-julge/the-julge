@@ -2,6 +2,8 @@ import { validateProfileData } from "../../utils/validateFormData";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
+import { useQuery } from "react-query";
 import Button from "@/components/Button/Button";
 import styled from "@emotion/styled";
 import Title from "./Title";
@@ -18,16 +20,19 @@ type EditFormData = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+const userInfoType = ["name", "phone", "address", "bio"];
+
 export default function ProfileEditForm() {
+  const { showToast } = useToast();
   const router = useRouter();
   const { id, jwt } = useCookie();
   const [address, setAddress] = useState<string>("서울시 종로구");
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm<EditFormData>({ mode: "onChange" });
+    setValue,
+  } = useForm<EditFormData>({ mode: "onSubmit" });
 
   const onSubmit = async (formData: EditFormData) => {
     try {
@@ -42,17 +47,47 @@ export default function ProfileEditForm() {
         },
       );
 
-      alert("등록이 완료 되었습니다.");
+      showToast("등록이 완료 되었습니다.");
       router.push("/my-profile");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const { message } = error.response.data;
-        alert(message);
+        showToast(message);
       } else if (error instanceof TypeError) {
-        alert(error.message);
+        showToast(error.message);
       }
     }
   };
+
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/users/${id}`);
+
+      return data.item;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const { message } = error.response.data;
+        showToast(message);
+      } else if (error instanceof TypeError) {
+        showToast(error.message);
+      }
+    }
+  };
+  const { data, isLoading, isSuccess } = useQuery(
+    "userInfo",
+    () => fetchData(),
+    {
+      enabled: !!id,
+    },
+  );
+
+  if (isLoading) return;
+
+  if (isSuccess) {
+    userInfoType.forEach((key: any) => {
+      setValue(key, data[key]);
+    });
+  }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

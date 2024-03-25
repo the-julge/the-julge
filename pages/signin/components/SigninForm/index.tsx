@@ -1,19 +1,15 @@
-import Button from "@/components/Button/Button";
-import Input from "@/components/Input";
-import {
-  INVALID_EMAIL,
-  INVALID_PASSWORD,
-  WRONG_INFORMATION,
-} from "@/lib/constants/errorMessage";
-import { validateSigninData } from "@/lib/utils/validateFormData";
-import styled from "@emotion/styled";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { SigninFormData } from "../../types/types";
+import { useToast } from "@/contexts/ToastContext";
+import { INVALID_EMAIL, WRONG_INFORMATION } from "@/lib/constants/errorMessage";
+import { validateSigninData } from "@/lib/utils/validateFormData";
+import Button from "@/components/Button/Button";
+import Input from "@/components/Input";
+import styled from "@emotion/styled";
+import axios from "axios";
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
-const passwordRegex = /^.{8,}$/;
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -23,6 +19,7 @@ export default function SigninForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<SigninFormData>({ mode: "onChange" });
+  const { showToast } = useToast();
   const router = useRouter();
 
   const { email: emailError, password: passwordError } = errors;
@@ -30,7 +27,7 @@ export default function SigninForm() {
   const onSubmit = async (formData: SigninFormData) => {
     const isValid = validateSigninData(formData);
     if (!isValid) {
-      alert(WRONG_INFORMATION);
+      showToast(WRONG_INFORMATION);
       return;
     }
 
@@ -46,7 +43,7 @@ export default function SigninForm() {
       router.push("/");
     } catch (error: any) {
       const { message } = error.response.data;
-      alert(message);
+      showToast(message);
     }
   };
 

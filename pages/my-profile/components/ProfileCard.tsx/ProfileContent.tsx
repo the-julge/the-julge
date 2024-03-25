@@ -22,12 +22,19 @@ export default function ProfileContent({
         <Name>{name}</Name>
       </NameContainer>
       <PhoneContainer>
-        <Image src="/images/phone.svg" alt="전화번호" width={20} height={20} />
+        <Image
+          priority
+          src="/images/phone.svg"
+          alt="전화번호"
+          width={20}
+          height={20}
+        />
 
         {formattedPhone}
       </PhoneContainer>
       <AddressContainer>
         <Image
+          priority
           src="/images/location.svg"
           alt="선호지역"
           width={20}
