@@ -9,6 +9,7 @@ import {
   LocationString,
   SelectedLocationList,
 } from "./types/types";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function Filter({
   isModalVisible,
@@ -19,6 +20,7 @@ export default function Filter({
     useState<SelectedLocationList>([]);
   const [startsAtValue, setStartsAtValue] = useState<string>("");
   const [hourlyPayValue, setHourlyPayValue] = useState<string>("");
+  const { showToast } = useToast();
 
   const toggleLocation = (location: LocationString) => {
     if (selectedLocations.includes(location)) {
@@ -28,6 +30,18 @@ export default function Filter({
     } else {
       setSelectedLocations([...selectedLocations, location]);
     }
+  };
+
+  const handleChangeStartsAt = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    const currentDate = new Date();
+
+    console.log(newDate);
+    console.log(currentDate);
+
+    if (new Date(newDate).getTime() <= currentDate.getTime())
+      showToast("과거 날짜는 선택할 수 없습니다.");
+    else setStartsAtValue(newDate);
   };
 
   const clearFilters = () => {
@@ -60,7 +74,7 @@ export default function Filter({
           type="datetime-local"
           max="9999-12-31T23:59"
           value={startsAtValue}
-          onChange={(e) => setStartsAtValue(e.target.value)}
+          onChange={handleChangeStartsAt}
         />
         <BorderLine />
         <Subtitle>금액</Subtitle>
